@@ -1,13 +1,17 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const {connect} = require('./src/config/database');
+const express = require("express");
+const bodyParser = require("body-parser");
+const { connect } = require("./src/config/database");
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: false }))
+// Middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json()); // allow JSON requests too (common in APIs)
 
-app.listen(3000, async () => {
-    await connect();
-    console.log("Mongo db connected successfully");
-    console.log("Server Started Successsfully");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, async () => {
+  await connect();
+  console.log("✅ MongoDB connected successfully");
+  console.log(`🚀 Server running on port ${PORT}`);
 });
