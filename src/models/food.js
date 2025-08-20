@@ -1,16 +1,13 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const foodSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
+const foodSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true, trim: true },
+        price: { type: Number, required: true, min: 0 },
     },
-    price: {
-        type: Number,
-        required: true
-    }
-});
+    { timestamps: true } // adds createdAt & updatedAt fields
+);
 
-const foodModel = new mongoose.model('Food', foodSchema);
+const Food = mongoose.model("Food", foodSchema);
 
-module.exports = foodModel;
+module.exports = Food;
