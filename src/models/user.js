@@ -1,32 +1,47 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
-const userSchema = new mongoose.Schema({
+// User schema definition
+const userSchema = new mongoose.Schema(
+  {
     email: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true, // store emails in lowercase
+      trim: true, // remove spaces
     },
     password: {
-        type: String,
-        required: true
-    }
-}, {timestamps: true});
+      type: String,
+      required: true,
+      minlength: 6, // enforce stronger passwords
+    },
+  },
+  { timestamps: true }
+);
 
-// pre - save - is a trigger that gets a function and executes it before a user object is saved
-userSchema.pre('save', async function encryptPassword (next) {
-    const user = this;
-    const hash = await bcrypt.hash(this.password, 10);
-    this.password = hash;
+// Hash password before saving user
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next(); // skip if password not modified
+  try {
+    const saltRounds = 10;
+    this.password = await bcrypt.hash(this.password, saltRounds);
     next();
+  } catch (err) {
+    next(err);
+  }
 });
 
-userSchema.methods.isValidPassword = async function checkValidity(password) {
-    const user = this;
-    const compare = await bcrypt.compare(password, user.password);
-    return compare;
-}
+// Compare entered password with hashed password
+userSchema.methods.isValidPassword = async function (password) {
+  try {
+    return await bcrypt.compare(password, this.password);
+  } catch (err) {
+    console.error("Error in password validation:", err);
+    return false;
+  }
+};
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;
