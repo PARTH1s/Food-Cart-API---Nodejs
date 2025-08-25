@@ -6,7 +6,7 @@ const app = express();
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json()); // allow JSON requests too (common in APIs)
+app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 3000;
 

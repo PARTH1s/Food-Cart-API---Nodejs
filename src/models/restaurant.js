@@ -1,21 +1,31 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const restaurantSchema = new mongoose.Schema({
+// Restaurant schema definition
+const restaurantSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
+      trim: true, // removes extra spaces
     },
     address: {
-        type: String
+      type: String,
+      trim: true,
     },
     food: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'food'
-        }
-    ]
-});
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Food", // Model names should be capitalized
+      },
+    ],
+  },
+  { timestamps: true } // adds createdAt & updatedAt
+);
 
-const restaurantModel = new mongoose.model('Restaurant', restaurantSchema);
+// Add index for faster queries by name
+restaurantSchema.index({ name: 1 });
 
-module.exports = restaurantModel;
+// Restaurant model
+const Restaurant = mongoose.model("Restaurant", restaurantSchema);
+
+module.exports = Restaurant;
